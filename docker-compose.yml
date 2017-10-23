@@ -1,0 +1,21 @@
+ignite-cassandra-client:
+  build: .
+  links:
+    - cassandra-test:cassandra-test
+
+cassandra-test:
+  image: cassandra:3.11.1
+  volumes_from:
+    - cassandra-test-vc
+  # Uncomment ports in case access from host is required.
+#  ports:
+#    - "7000:7000/tcp"
+#    - "7001:7001/tcp"
+#    - "7199:7199/tcp"
+#    - "9042:9042/tcp"
+#    - "9160:9160/tcp"
+
+cassandra-test-vc:
+  image: alpine:latest
+  volumes:
+    - /var/lib/cassandra

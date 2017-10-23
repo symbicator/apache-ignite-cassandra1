@@ -1,0 +1,79 @@
+group 'org.testprojects.ignite'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "com.bmuschko:gradle-docker-plugin:3.2.0"
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.0'
+    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+}
+
+allprojects {
+    version '1.0'
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'announce'
+apply plugin: 'com.bmuschko.docker-remote-api'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.slf4j:slf4j-api:${slf4jApiVersion}"
+    testCompile "ch.qos.logback:logback-classic:${logbackVersion}"
+
+    testCompile "junit:junit:${junitVersion}"
+
+    compile "org.apache.ignite:ignite-core:${igniteVersion}"
+    compile "org.apache.ignite:ignite-indexing:${igniteVersion}"
+    compile "org.apache.ignite:ignite-spring:${igniteVersion}"
+
+    compile "org.apache.ignite:ignite-cassandra-store:${igniteVersion}"
+    compile "org.apache.ignite:ignite-cassandra-serializers:${igniteVersion}"
+}
+
+jar {
+    baseName = "ignite-cassandra-client"
+
+    from {
+        (configurations.runtime).collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+
+    manifest {
+        attributes("Main-Class": "org.testprojects.ignite.ignte_cassandra_client.IgniteServerRunner" )
+    }
+}
+
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+
+task buildImage(type: DockerBuildImage) {
+    dependsOn build
+    inputDir = rootProject.projectDir
+    tag = 'testprojects/ignite-cassandra-client:latest'
+}
+
+tasks.withType(Test) {
+    forkEvery = 5
+    maxParallelForks = Runtime.runtime.availableProcessors() / 2
+    testLogging {
+        events 'started', 'passed', 'skipped', 'failed'
+        showStackTraces = true
+        exceptionFormat = 'full'
+        showStandardStreams = true
+    }
+}

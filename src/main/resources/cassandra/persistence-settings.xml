@@ -1,0 +1,4 @@
+<persistence keyspace="test1" table="pojo_test_entity_with_map_field">
+    <keyPersistence class="java.lang.Long" strategy="PRIMITIVE"/>
+    <valuePersistence class="org.testprojects.ignite.ignte_cassandra_client.EntityWithMapField" strategy="POJO"/>
+</persistence>
