@@ -3,7 +3,7 @@
 1. Make sure you are in the `docker` group.  
 Execute `sudo usermod -a -G docker $USER` and reboot.
 2. From the root project directory execute  
-`docker-compose build --no-cache && docker-compose up -d cassandra-test && docker-compose up ignite-cassandra-client 
+`./gradlew build && docker-compose build --no-cache && docker-compose up -d cassandra-test && docker-compose up ignite-cassandra-client 
 `  
 That should build the project and create a corresponding 
 image from that. Then a Cassandra instance should be started and
